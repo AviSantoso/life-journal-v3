@@ -4,8 +4,8 @@ export type JournalEntry = {
   content: string;
   date: string;
   email: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateJournalEntry = Omit<

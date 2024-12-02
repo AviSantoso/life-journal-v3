@@ -17,7 +17,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
-export const auth = getAuth(app);
-export const realtimeDb = getDatabase(app);
+export const firebaseApp = initializeApp(firebaseConfig);
+export const analytics = getAnalytics(firebaseApp);
+export const auth = getAuth(firebaseApp);
+export const realtimeDb = getDatabase(
+  firebaseApp,
+  "https://life-journal-v3-default-rtdb.asia-southeast1.firebasedatabase.app"
+);

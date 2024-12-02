@@ -1,6 +1,6 @@
 "use client";
 
-import { format, formatDistanceToNowStrict, parse } from "date-fns";
+import { format, formatDistanceToNowStrict, parse, parseISO } from "date-fns";
 import {
   Card,
   CardContent,
@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { JournalEntry } from "@/types";
 import { getHomePageData as fetchHomePageData } from "@/actions/getHomePageData";
-import { useJournalEntryService } from "@/hooks/useJournalEntryService";
+import { useToast } from "@/hooks/use-toast";
+import journalEntryService from "@/hooks/useJournalEntryService";
 
 export type HomePageData = {
   journalEntries: JournalEntry[];
@@ -36,9 +37,17 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
     <div className="flex flex-col w-screen h-screen overflow-y-auto p-12 bg-muted-foreground">
       <div className="container max-w-4xl mx-auto px-4">
         <div className="space-y-6">
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <p className="font-sans text-xl text-muted-foreground p-2 font-extralight">
+              Life Journal
+            </p>
             {canAddEntry && (
-              <Button onClick={() => navigate("/add-entry")}>Add Entry</Button>
+              <Button
+                className="hover:bg-gray-200"
+                onClick={() => navigate("/add-entry")}
+              >
+                Add Entry
+              </Button>
             )}
           </div>
           {journalEntries.map((entry) => {
@@ -57,7 +66,7 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
                         {getFullDateString(entry.date)}
                       </p>
                       <p className="font-sans text-sm capitalize">
-                        {getRelativeDateString(entry.createdAt)}
+                        {getRelativeDateString(parseISO(entry.createdAt))}
                       </p>
                     </div>
                   </CardDescription>
@@ -81,20 +90,28 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
 }
 
 export default function Page() {
-  const journalEntryService = useJournalEntryService();
+  const { toast } = useToast();
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [canAddEntry, setCanAddEntry] = useState(false);
 
   useEffect(() => {
     async function init() {
-      const { journalEntries, canAddEntry } = await fetchHomePageData({
-        journalEntryService,
-      });
-      setJournalEntries(journalEntries);
-      setCanAddEntry(canAddEntry);
+      try {
+        const { journalEntries, canAddEntry } = await fetchHomePageData({
+          journalEntryService,
+        });
+        setJournalEntries(journalEntries);
+        setCanAddEntry(canAddEntry);
+      } catch (error) {
+        toast({
+          title: "Failed to fetch journal entries",
+          description: "" + error,
+          variant: "destructive",
+        });
+      }
     }
     init();
-  }, [journalEntryService]);
+  }, [toast]);
 
   return <HomePage journalEntries={journalEntries} canAddEntry={canAddEntry} />;
 }

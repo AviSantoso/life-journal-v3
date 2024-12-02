@@ -8,10 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { useJournalEntryService } from "@/hooks/useJournalEntryService";
+import journalEntryService from "@/hooks/useJournalEntryService";
 
 function AddEntryPage() {
-  const journalEntryService = useJournalEntryService();
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +53,7 @@ function AddEntryPage() {
   return (
     <div className="flex flex-col w-screen h-screen overflow-y-auto p-12 bg-muted-foreground">
       <div className="container max-w-4xl mx-auto px-4">
-        <div className="p-6 bg-white rounded-xl shadow-xl border-2 border-secondary">
+        <div className="p-6 bg-white rounded-xl shadow-xl border border-secondary">
           <h2 className="text-2xl font-bold mb-6 uppercase text-primary">
             Daily Journal
           </h2>

@@ -1,9 +1,9 @@
 import { nanoid } from "nanoid";
-import { get, getDatabase, ref, set } from "firebase/database";
-import { auth } from "@/lib/firebase";
+import { get, ref, set } from "firebase/database";
+import { auth, realtimeDb } from "@/lib/firebase";
 import { CreateJournalEntry, JournalEntry } from "@/types";
 
-const db = getDatabase();
+const db = realtimeDb;
 
 async function createJournalEntry({
   title,
@@ -30,7 +30,7 @@ async function createJournalEntry({
     updatedAt,
   };
 
-  const journalEntryRef = ref(db, `journalEntries/${id}`);
+  const journalEntryRef = ref(db, `JournalEntries/${id}`);
 
   await set(journalEntryRef, journalEntry);
 
@@ -44,9 +44,16 @@ async function getJournalEntries(): Promise<JournalEntry[]> {
     throw new Error("User not found");
   }
 
-  const journalEntries = await get(ref(db, `journalEntries`));
+  const journalEntries = await get(ref(db, `JournalEntries`));
 
-  return journalEntries.val();
+  const journalEntriesObj = journalEntries.val();
+
+  // Check if journalEntriesObj is null
+  if (journalEntriesObj === null) {
+    return [];
+  }
+
+  return Object.values(journalEntriesObj);
 }
 
 export type TJournalEntryService = {
@@ -54,9 +61,9 @@ export type TJournalEntryService = {
   getJournalEntries: typeof getJournalEntries;
 };
 
-export function useJournalEntryService(): TJournalEntryService {
-  return {
-    createJournalEntry,
-    getJournalEntries,
-  };
-}
+const journalEntryService: TJournalEntryService = {
+  createJournalEntry,
+  getJournalEntries,
+};
+
+export default journalEntryService;
