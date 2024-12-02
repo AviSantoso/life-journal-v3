@@ -1,6 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect } from "react";
-import { Schema, Repository, InferSchema } from "redis-om";
+import { Schema, Repository } from "redis-om";
 import { createClient } from "redis";
+import { JournalEntry, JournalEntryRepository } from "./types";
 
 const REDIS_PASSWORD = import.meta.env.VITE_REDIS_PASSWORD;
 const REDIS_HOST = import.meta.env.VITE_REDIS_HOST;
@@ -20,10 +22,10 @@ export const redisClient = createClient({
 
 type TDbContext = {
   redisClient: typeof redisClient;
-  journalEntryRepository: Repository<JournalEntry>;
+  journalEntryRepository: JournalEntryRepository;
 };
 
-export const journalEntrySchema = new Schema(
+export const journalEntrySchema = new Schema<JournalEntry>(
   "journalEntry",
   {
     title: { type: "string" },
@@ -37,40 +39,42 @@ export const journalEntrySchema = new Schema(
   }
 );
 
-export type JournalEntry = InferSchema<typeof journalEntrySchema>;
-
 export const journalEntryRepository = new Repository(
   journalEntrySchema,
   redisClient
 );
 
-await journalEntryRepository.createIndex();
-
-export const RedisClientContext = createContext<TDbContext>({
+export const DbContext = createContext<TDbContext>({
   redisClient,
   journalEntryRepository,
 });
 
-export function useRedisClient() {
-  return useContext(RedisClientContext);
+export function useDbContext() {
+  return useContext(DbContext);
 }
 
 export function DbContextProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    redisClient.connect();
+    async function init() {
+      await redisClient.connect();
+      await journalEntryRepository.createIndex();
+    }
+
+    init();
+
     return () => {
       redisClient.disconnect();
     };
   }, []);
 
   return (
-    <RedisClientContext.Provider
+    <DbContext.Provider
       value={{
         redisClient,
         journalEntryRepository,
       }}
     >
       {children}
-    </RedisClientContext.Provider>
+    </DbContext.Provider>
   );
 }
