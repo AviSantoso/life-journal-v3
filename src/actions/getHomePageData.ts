@@ -4,20 +4,21 @@ import { subMonths, subWeeks, subYears } from "date-fns";
 import { uniqBy } from "lodash";
 import { getDateStr } from "../lib/getDateStr";
 import { HomePageData } from "@/components/pages/Home.page";
-import { JournalEntry, JournalEntryRepository } from "@/types";
-
+import { JournalEntry } from "@/types";
+import { TJournalEntryService } from "@/hooks/useJournalEntryService";
 export async function getHomePageData({
-  journalEntryRepository,
+  journalEntryService,
 }: {
-  journalEntryRepository: JournalEntryRepository;
+  journalEntryService: TJournalEntryService;
 }): Promise<HomePageData> {
   const today = new Date();
   const todayStr = getDateStr(today);
 
-  const latestEntries = await journalEntryRepository
-    .search()
-    .sortDescending("createdAt")
-    .return.page(0, 2);
+  const allEntries = await journalEntryService.getJournalEntries();
+
+  const latestEntries = allEntries
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 2);
 
   const dates = [
     subWeeks(today, 1), // 1 week ago
@@ -29,15 +30,8 @@ export async function getHomePageData({
     subYears(today, 10), // 10 years ago
   ];
 
-  const olderEntries = await Promise.all(
-    dates.map(async (d) =>
-      journalEntryRepository
-        .search()
-        .where("createdAt")
-        .lte(d.toISOString())
-        .sortDescending("createdAt")
-        .return.first()
-    )
+  const olderEntries = dates.map((d) =>
+    allEntries.find((x) => x.createdAt <= d)
   );
 
   const uniqueEntries = uniqBy(

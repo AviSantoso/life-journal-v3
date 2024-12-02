@@ -1,24 +1,22 @@
 "use server";
 
+import { TJournalEntryService } from "@/hooks/useJournalEntryService";
 import { getDateStr } from "@/lib/getDateStr";
-import { JournalEntryRepository } from "@/types";
 
 export async function createJournalEntry(args: {
-  journalEntryRepository: JournalEntryRepository;
+  journalEntryService: TJournalEntryService;
   isPublic: boolean;
   title: string;
   content: string;
   imageUrl: string;
 }) {
-  const { journalEntryRepository } = args;
+  const { journalEntryService } = args;
 
   const todaysDate = getDateStr(new Date());
 
-  await journalEntryRepository.save({
+  await journalEntryService.createJournalEntry({
     title: args.title,
     content: args.content,
     date: todaysDate,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
   });
 }

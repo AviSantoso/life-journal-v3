@@ -1,6 +1,6 @@
 "use client";
 
-import { format, formatDistanceToNowStrict, parse, parseISO } from "date-fns";
+import { format, formatDistanceToNowStrict, parse } from "date-fns";
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { JournalEntry } from "@/types";
 import { getHomePageData as fetchHomePageData } from "@/actions/getHomePageData";
-import { useDbContext } from "@/DbContextProvider";
+import { useJournalEntryService } from "@/hooks/useJournalEntryService";
 
 export type HomePageData = {
   journalEntries: JournalEntry[];
@@ -28,8 +28,8 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
     return format(dateObj, `EEEE, MMMM do, yyyy`);
   }
 
-  function getRelativeDateString(date: string) {
-    return formatDistanceToNowStrict(parseISO(date), { addSuffix: true });
+  function getRelativeDateString(date: Date) {
+    return formatDistanceToNowStrict(date, { addSuffix: true });
   }
 
   return (
@@ -81,20 +81,20 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
 }
 
 export default function Page() {
-  const { journalEntryRepository } = useDbContext();
+  const journalEntryService = useJournalEntryService();
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [canAddEntry, setCanAddEntry] = useState(false);
 
   useEffect(() => {
     async function init() {
       const { journalEntries, canAddEntry } = await fetchHomePageData({
-        journalEntryRepository,
+        journalEntryService,
       });
       setJournalEntries(journalEntries);
       setCanAddEntry(canAddEntry);
     }
     init();
-  }, [journalEntryRepository]);
+  }, [journalEntryService]);
 
   return <HomePage journalEntries={journalEntries} canAddEntry={canAddEntry} />;
 }

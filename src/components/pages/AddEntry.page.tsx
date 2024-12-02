@@ -8,11 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { useDbContext } from "@/DbContextProvider";
+import { useJournalEntryService } from "@/hooks/useJournalEntryService";
 
 function AddEntryPage() {
+  const journalEntryService = useJournalEntryService();
   const [, navigate] = useLocation();
-  const { journalEntryRepository } = useDbContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
@@ -30,7 +30,7 @@ function AddEntryPage() {
       e.preventDefault();
       setIsLoading(true);
       await createJournalEntry({
-        journalEntryRepository,
+        journalEntryService,
         isPublic: false,
         title,
         content,

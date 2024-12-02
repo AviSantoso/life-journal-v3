@@ -1,11 +1,14 @@
-import { Repository } from "redis-om";
-
 export type JournalEntry = {
+  id: string;
   title: string;
   content: string;
   date: string;
-  createdAt: string;
-  updatedAt: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
-export type JournalEntryRepository = Repository<JournalEntry>;
+export type CreateJournalEntry = Omit<
+  JournalEntry,
+  "id" | "email" | "createdAt" | "updatedAt"
+>;
