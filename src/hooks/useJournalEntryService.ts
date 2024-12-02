@@ -26,8 +26,8 @@ async function createJournalEntry({
     title,
     content,
     date,
-    createdAt,
-    updatedAt,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
   };
 
   const journalEntryRef = ref(db, `JournalEntries/${id}`);
