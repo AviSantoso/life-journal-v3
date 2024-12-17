@@ -1,11 +1,11 @@
 "use server";
 
-import { parseISO, subMonths, subWeeks, subYears } from "date-fns";
-import { uniqBy } from "lodash";
-import { getDateStr } from "../lib/getDateStr";
 import { HomePageData } from "@/components/pages/Home.page";
 import { JournalEntry } from "@/types";
 import { TJournalEntryService } from "@/hooks/useJournalEntryService";
+import { getDateStr } from "../lib/getDateStr";
+import { parseISO } from "date-fns";
+import { uniqBy } from "lodash";
 
 export async function getHomePageData({
   journalEntryService,
@@ -17,30 +17,25 @@ export async function getHomePageData({
 
   const allEntries = await journalEntryService.getJournalEntries();
 
-  const latestEntries = allEntries
-    .sort(
-      (a, b) =>
-        parseISO(b.createdAt).getTime() - parseISO(a.createdAt).getTime()
-    )
-    .slice(0, 2);
-
-  const dates = [
-    subWeeks(today, 1), // 1 week ago
-    subWeeks(today, 2), // 2 weeks ago
-    subMonths(today, 1), // 1 month ago
-    subMonths(today, 2), // 2 months ago
-    subYears(today, 1), // 1 year ago
-    subYears(today, 2), // 2 years ago
-    subYears(today, 5), // 5 years ago
-    subYears(today, 10), // 10 years ago
-  ];
-
-  const olderEntries = dates.map((d) =>
-    allEntries.find((x) => parseISO(x.createdAt) <= d)
+  // Get entries at fibonacci positions from the end (1st, 2nd, 3rd, 5th, 8th, etc)
+  const sortedEntries = allEntries.sort(
+    (a, b) => parseISO(b.createdAt).getTime() - parseISO(a.createdAt).getTime()
   );
 
+  let a = 1;
+  let b = 1;
+  const fibIndices = [];
+  while (b < sortedEntries.length) {
+    fibIndices.push(b - 1);
+    const temp = a + b;
+    a = b;
+    b = temp;
+  }
+
+  const olderEntries = fibIndices.map((index) => sortedEntries[index]);
+
   const uniqueEntries = uniqBy(
-    [...latestEntries, ...olderEntries.filter((x) => x != null)],
+    [...olderEntries.filter((x) => x != null)],
     (x: JournalEntry) => x.date
   );
 

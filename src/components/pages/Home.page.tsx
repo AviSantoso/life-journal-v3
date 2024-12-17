@@ -1,6 +1,5 @@
 "use client";
 
-import { format, formatDistanceToNowStrict, parse, parseISO } from "date-fns";
 import {
   Card,
   CardContent,
@@ -8,13 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
+import { format, formatDistanceToNowStrict, parse, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { JournalEntry } from "@/types";
 import { getHomePageData as fetchHomePageData } from "@/actions/getHomePageData";
-import { useToast } from "@/hooks/use-toast";
 import journalEntryService from "@/hooks/useJournalEntryService";
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export type HomePageData = {
   journalEntries: JournalEntry[];
@@ -38,8 +39,8 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
       <div className="container max-w-4xl mx-auto px-4">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <p className="font-sans text-xl text-muted-foreground p-2 font-extralight">
-              Life Journal
+            <p className="font-sans text-2xl text-muted-foreground p-2 font-bold">
+              Life Journal v3
             </p>
             {canAddEntry && (
               <Button
@@ -56,25 +57,27 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
               <Card key={entry.date} className="w-full">
                 <CardHeader className="pb-2">
                   <CardTitle>
-                    <p className="font-sans text-xl text-primary">
+                    <p className="font-sans text-xl font-semibold">
                       {entry.title}
                     </p>
                   </CardTitle>
                   <CardDescription>
-                    <div className="flex justify-between">
-                      <p className="font-sans text-sm">
-                        {getFullDateString(entry.date)}
-                      </p>
-                      <p className="font-sans text-sm capitalize">
+                    <div className="flex justify-between text-lg font-sans">
+                      <p>{getFullDateString(entry.date)}</p>
+                      <p className="capitalize">
                         {getRelativeDateString(parseISO(entry.createdAt))}
                       </p>
                     </div>
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="flex flex-col pb-2 pt-4 opacity-90">
                     {entryLines.map((line, index) => (
-                      <p key={index} className="mt-2 font-sans text-lg">
+                      <p
+                        key={index}
+                        className="mt-2 font-sans text-lg"
+                        style={{ lineHeight: 1.5 }}
+                      >
                         {line}
                       </p>
                     ))}

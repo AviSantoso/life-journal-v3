@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { createJournalEntry } from "@/actions/createJournalEntry";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useLocation } from "wouter";
-import { useToast } from "@/hooks/use-toast";
+import { createJournalEntry } from "@/actions/createJournalEntry";
 import journalEntryService from "@/hooks/useJournalEntryService";
+import { useLocation } from "wouter";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 function AddEntryPage() {
   const [, navigate] = useLocation();
@@ -46,9 +46,9 @@ function AddEntryPage() {
     }
   }
 
-  function validateLength(text: string) {
-    return text.length <= 1000 && text.length >= 500;
-  }
+  const contentWithoutWhitespace = content.replace(/\s/g, "");
+  const contentLength = contentWithoutWhitespace.length;
+  const isLengthValid = contentLength <= 1024 && contentLength >= 512;
 
   return (
     <div className="flex flex-col w-screen h-screen overflow-y-auto p-12 bg-muted-foreground">
@@ -89,17 +89,19 @@ function AddEntryPage() {
                 onChange={(e) => setContent(e.target.value)}
                 className="w-full h-64 font-sans text-gray-800"
                 style={{ lineHeight: "1.5rem" }}
-                maxLength={1000}
                 autoComplete="off"
               />
               <div className="flex items-center justify-between gap-2">
                 <div className="text-muted-foreground text-xs">
-                  {content.length < 500
-                    ? "Minimum 500 characters required"
+                  {contentLength < 512
+                    ? "Minimum 512 characters required (excluding spaces)"
+                    : ""}
+                  {contentLength > 1024
+                    ? "Maximum 1024 characters (excluding spaces)"
                     : ""}
                 </div>
                 <div className="text-sm text-right text-gray-500">
-                  {content.length}/1000 characters
+                  {contentLength}/1024 characters
                 </div>
               </div>
             </div>
@@ -107,7 +109,7 @@ function AddEntryPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading || !validateLength(content) || title === ""}
+              disabled={isLoading || !isLengthValid || title === ""}
             >
               {isLoading ? "Submitting..." : "Submit Entry"}
             </Button>
