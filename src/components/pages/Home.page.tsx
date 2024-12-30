@@ -35,16 +35,16 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
   }
 
   return (
-    <div className="flex flex-col w-screen h-screen overflow-y-auto p-12 bg-muted-foreground">
-      <div className="container max-w-4xl mx-auto px-4">
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <p className="font-sans text-2xl text-muted-foreground p-2 font-bold">
+    <div className="flex flex-col w-screen h-screen overflow-y-auto p-4 sm:p-6 md:p-12 bg-muted-foreground">
+      <div className="container max-w-4xl mx-auto px-2 sm:px-4">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex justify-between items-center gap-4">
+            <p className="font-sans text-xl sm:text-2xl text-muted-foreground p-2 font-bold">
               Life Journal v3
             </p>
             {canAddEntry && (
               <Button
-                className="hover:bg-gray-200"
+                className="w-full sm:w-auto hover:bg-gray-200"
                 onClick={() => navigate("/add-entry")}
               >
                 Add Entry
@@ -57,12 +57,12 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
               <Card key={entry.date} className="w-full">
                 <CardHeader className="pb-2">
                   <CardTitle>
-                    <p className="font-sans text-xl font-semibold">
+                    <p className="font-sans text-lg sm:text-xl font-semibold">
                       {entry.title}
                     </p>
                   </CardTitle>
                   <CardDescription>
-                    <div className="flex justify-between text-lg font-sans">
+                    <div className="flex flex-col sm:flex-row justify-between text-base sm:text-lg font-sans gap-2">
                       <p>{getFullDateString(entry.date)}</p>
                       <p className="capitalize">
                         {getRelativeDateString(parseISO(entry.createdAt))}
@@ -75,7 +75,7 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
                     {entryLines.map((line, index) => (
                       <p
                         key={index}
-                        className="mt-2 font-sans text-lg"
+                        className="mt-2 font-sans text-base sm:text-lg"
                         style={{ lineHeight: 1.5 }}
                       >
                         {line}
