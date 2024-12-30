@@ -51,14 +51,14 @@ function AddEntryPage() {
   const isLengthValid = contentLength <= 1024 && contentLength >= 512;
 
   return (
-    <div className="flex flex-col w-screen h-screen overflow-y-auto p-12 bg-muted-foreground">
-      <div className="container max-w-4xl mx-auto px-4">
-        <div className="p-6 bg-white rounded-xl shadow-xl border border-secondary">
-          <h2 className="text-2xl font-bold mb-6 uppercase text-primary">
+    <div className="flex flex-col w-screen h-screen overflow-y-auto items-center sm:justify-center p-2 pt-4 justify-start bg-muted-foreground">
+      <div className="container max-w-4xl mx-auto px-2 sm:px-4">
+        <div className="p-4 sm:p-6 bg-white rounded-xl shadow-xl border border-secondary">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 uppercase text-primary">
             Daily Journal
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-sm font-medium">
                   Title
@@ -72,26 +72,15 @@ function AddEntryPage() {
                   autoComplete="off"
                 />
               </div>
-              <div className="text-sm font-medium space-y-2">
-                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                  <li>What have I done since my last journal entry?</li>
-                  <li>
-                    What am I planning to do before my next journal entry?
-                  </li>
-                  <li>Did anything interesting happen since my last entry?</li>
-                  <li>What ideas have I been pondering recently?</li>
-                  <li>Is there anything I need to remember?</li>
-                </ul>
-              </div>
               <Textarea
                 id="content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full h-64 font-sans text-gray-800"
+                className="w-full min-h-80 font-sans text-gray-800"
                 style={{ lineHeight: "1.5rem" }}
                 autoComplete="off"
               />
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div className="text-muted-foreground text-xs">
                   {contentLength < 512
                     ? "Minimum 512 characters required (excluding spaces)"
@@ -100,7 +89,7 @@ function AddEntryPage() {
                     ? "Maximum 1024 characters (excluding spaces)"
                     : ""}
                 </div>
-                <div className="text-sm text-right text-gray-500">
+                <div className="text-xs sm:text-sm text-right text-gray-500">
                   {contentLength}/1024 characters
                 </div>
               </div>
