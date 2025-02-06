@@ -1,0 +1,10 @@
+{
+	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"features": {
+		"ghcr.io/shyim/devcontainers-features/bun:0": {},
+		"ghcr.io/joedmck/devcontainer-features/wrangler:1": {},
+		"ghcr.io/devcontainers-extra/features/digitalocean-cli:1": {
+			"version": "latest"
+		}
+	}
+}

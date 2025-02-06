@@ -48,7 +48,7 @@ function AddEntryPage() {
 
   const contentWithoutWhitespace = content.replace(/\s/g, "");
   const contentLength = contentWithoutWhitespace.length;
-  const isLengthValid = contentLength <= 1024 && contentLength >= 512;
+  const isLengthValid = contentLength <= 2048 && contentLength >= 512;
 
   return (
     <div className="flex flex-col w-screen h-screen overflow-y-auto items-center sm:justify-center p-2 pt-4 justify-start bg-muted-foreground">
