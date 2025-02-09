@@ -9,6 +9,8 @@ import journalEntryService from "@/hooks/useJournalEntryService";
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useImmer } from "use-immer";
+import { MinusIcon, PlusIcon } from "lucide-react";
 
 function AddEntryPage() {
   const [, navigate] = useLocation();
@@ -16,6 +18,7 @@ function AddEntryPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("Dear Future Avi,\n\n");
+  const [gratitudeItems, mutateGratitudeItems] = useImmer<string[]>(["", "", ""]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     try {
@@ -30,10 +33,9 @@ function AddEntryPage() {
       setIsLoading(true);
       await createJournalEntry({
         journalEntryService,
-        isPublic: false,
         title,
         content,
-        imageUrl: "",
+        gratitudeItems,
       });
       navigate("/");
     } catch (error) {
@@ -49,6 +51,9 @@ function AddEntryPage() {
   const contentWithoutWhitespace = content.replace(/\s/g, "");
   const contentLength = contentWithoutWhitespace.length;
   const isLengthValid = contentLength <= 2048 && contentLength >= 512;
+  const hasEmptyGratitudeItems = gratitudeItems.some((item) => item === "");
+
+  const canSubmit = !isLoading && isLengthValid && title !== "" && !hasEmptyGratitudeItems;
 
   return (
     <div className="flex flex-col w-screen h-screen overflow-y-auto items-center sm:justify-center p-2 pt-4 justify-start bg-muted-foreground">
@@ -95,10 +100,60 @@ function AddEntryPage() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Label className="text-sm font-medium">Gratitude Items</Label>
+                </div>
+                <div className="flex gap-2">
+
+                  <Button
+                    disabled={gratitudeItems.length >= 7}
+                    type="button"
+                    onClick={() =>
+                      mutateGratitudeItems((draft) => {
+                        draft.push("");
+                      })
+                    }
+                    className="w-full"
+                  >
+                    <PlusIcon className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    disabled={gratitudeItems.length <= 3}
+                    type="button"
+                    onClick={() =>
+                      mutateGratitudeItems((draft) => {
+                        draft.pop();
+                      })
+                    }
+                    className="w-full"
+                  >
+                    <MinusIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {gratitudeItems.map((item, index) => (
+                <Input
+                  key={index}
+                  value={item}
+                  onChange={(e) =>
+                    mutateGratitudeItems((draft) => {
+                      draft[index] = e.target.value;
+                    })
+                  }
+                  placeholder={`What is one thing you are grateful for that happened in the last 24 hours?`}
+                  className="w-full font-sans text-gray-800"
+                  autoComplete="off"
+                />
+              ))}
+            </div>
+
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading || !isLengthValid || title === ""}
+              disabled={!canSubmit}
             >
               {isLoading ? "Submitting..." : "Submit Entry"}
             </Button>

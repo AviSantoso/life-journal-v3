@@ -71,16 +71,37 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col pb-2 pt-4 opacity-90">
-                    {entryLines.map((line, index) => (
-                      <p
-                        key={index}
-                        className="mt-2 font-sans text-base sm:text-lg"
-                        style={{ lineHeight: 1.5 }}
-                      >
-                        {line}
-                      </p>
-                    ))}
+                  <div className="flex flex-col gap-4 py-4">
+                    <div className="flex flex-col opacity-90">
+                      {entryLines.map((line, index) => (
+                        <p
+                          key={index}
+                          className="mt-2 font-sans text-base sm:text-lg"
+                          style={{ lineHeight: 1.5 }}
+                        >
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                    {entry.gratitudeItems ? (
+                      <>
+                        <div className="py-2 my-1">
+                          <div className="flex items-center justify-center">
+                            <div className="h-px bg-gray-200 w-12" />
+                            <span className="mx-3 text-gray-400 text-sm">·</span>
+                            <div className="h-px bg-gray-200 w-12" />
+                          </div>
+                        </div>
+                        <ul className="flex flex-col opacity-90">
+                          <p className="font-sans text-base sm:text-lg">Gratitude Items</p>
+                          {entry.gratitudeItems?.map((item, index) => (
+                            <li key={index} className="mt-2 font-sans text-base sm:text-lg">
+                              - {item.content}
+                            </li>
+                          ))}
+                        </ul>
+                      </>)
+                      : null}
                   </div>
                 </CardContent>
               </Card>

@@ -22,8 +22,8 @@ export async function getHomePageData({
     (a, b) => parseISO(b.createdAt).getTime() - parseISO(a.createdAt).getTime()
   );
 
-  let a = 1;
-  let b = 1;
+  let a = 3;
+  let b = 5;
   const fibIndices = [];
   while (b < sortedEntries.length) {
     fibIndices.push(b - 1);

@@ -8,6 +8,7 @@ const db = realtimeDb;
 async function createJournalEntry({
   title,
   content,
+  gratitudeItems,
   date,
 }: CreateJournalEntry): Promise<JournalEntry> {
   const user = auth.currentUser;
@@ -25,6 +26,7 @@ async function createJournalEntry({
     email: user.email,
     title,
     content,
+    gratitudeItems,
     date,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
