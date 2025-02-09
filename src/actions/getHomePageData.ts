@@ -24,7 +24,7 @@ export async function getHomePageData({
 
   let a = 3;
   let b = 5;
-  const fibIndices = [];
+  const fibIndices = [0];
   while (b < sortedEntries.length) {
     fibIndices.push(b - 1);
     const temp = a + b;
