@@ -24,6 +24,7 @@ export type HomePageData = {
 
 function HomePage({ journalEntries, canAddEntry }: HomePageData) {
   const [, navigate] = useLocation();
+  const [expandedEntries, setExpandedEntries] = useState<{ [key: string]: boolean }>({});
 
   function getFullDateString(date: string) {
     const dateObj = parse(date, "yyyy-MM-dd", new Date());
@@ -32,6 +33,13 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
 
   function getRelativeDateString(date: Date) {
     return formatDistanceToNowStrict(date, { addSuffix: true });
+  }
+
+  function toggleGratitudeItems(date: string) {
+    setExpandedEntries((prev) => ({
+      ...prev,
+      [date]: !prev[date],
+    }));
   }
 
   return (
@@ -53,6 +61,7 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
           </div>
           {journalEntries.map((entry) => {
             const entryLines = entry.content.split("\n");
+            const isExpanded = expandedEntries[entry.date];
             return (
               <Card key={entry.date} className="w-full">
                 <CardHeader className="pb-2">
@@ -83,25 +92,35 @@ function HomePage({ journalEntries, canAddEntry }: HomePageData) {
                         </p>
                       ))}
                     </div>
-                    {entry.gratitudeItems ? (
+                    {entry.gratitudeItems && (
                       <>
-                        <div className="py-2 my-1">
-                          <div className="flex items-center justify-center">
-                            <div className="h-px bg-gray-200 w-12" />
-                            <span className="mx-3 text-gray-400 text-sm">·</span>
-                            <div className="h-px bg-gray-200 w-12" />
-                          </div>
-                        </div>
-                        <ul className="flex flex-col opacity-90">
-                          <p className="font-sans text-base sm:text-lg">Gratitude Items</p>
-                          {entry.gratitudeItems?.map((item, index) => (
-                            <li key={index} className="mt-2 font-sans text-base sm:text-lg">
-                              - {item.content}
-                            </li>
-                          ))}
-                        </ul>
-                      </>)
-                      : null}
+                        <Button
+                          className="mt-2"
+                          onClick={() => toggleGratitudeItems(entry.date)}
+                        >
+                          {isExpanded ? "Hide Gratitude Items" : "Show Gratitude Items"}
+                        </Button>
+                        {isExpanded && (
+                          <>
+                            <div className="py-2 my-1">
+                              <div className="flex items-center justify-center">
+                                <div className="h-px bg-gray-200 w-12" />
+                                <span className="mx-3 text-gray-400 text-sm">·</span>
+                                <div className="h-px bg-gray-200 w-12" />
+                              </div>
+                            </div>
+                            <ul className="flex flex-col opacity-90">
+                              <p className="font-sans text-base sm:text-lg">Gratitude Items</p>
+                              {entry.gratitudeItems.map((item, index) => (
+                                <li key={index} className="mt-2 font-sans text-base sm:text-lg">
+                                  - {item.content}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        )}
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>
